@@ -13,7 +13,7 @@ This document describes the essential helper functions required for IP subnet op
 
 To install these helper functions in your MySQL database, execute the following SQL commands:
 
-[`HELPER_FUNCTIONS_Oracle.sql`](./sql/HELPER_FUNCTIONS_MySQL.sql)
+[`HELPER_FUNCTIONS_MySQL.sql`](./sql/HELPER_FUNCTIONS_MySQL.sql)
 
 ## Function Descriptions
 
