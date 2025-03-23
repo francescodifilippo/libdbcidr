@@ -13,7 +13,7 @@ Questo documento descrive le funzioni di supporto essenziali necessarie per le o
 
 Per installare queste funzioni di supporto nel tuo database MySQL, esegui i seguenti comandi SQL:
 
-[`HELPER_FUNCTIONS_Oracle.sql`](./sql/HELPER_FUNCTIONS_MySQL.sql)
+[`HELPER_FUNCTIONS_MySQL.sql`](./sql/HELPER_FUNCTIONS_MySQL.sql)
 
 ## Descrizione delle Funzioni
 
