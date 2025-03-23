@@ -14,105 +14,10 @@ Questa funzione calcola la subnet aggregata minima che comprende tutte le subnet
 Per installare questa funzione nel tuo database MySQL, esegui i seguenti comandi SQL in ordine:
 
 1. Prima, installa le funzioni di supporto se non l'hai già fatto:
-```sql
--- Funzione di supporto per ottenere l'indirizzo di rete da un IP e CIDR
-CREATE FUNCTION GET_NETWORK_ADDRESS(ip VARCHAR(15), cidr INT)
-RETURNS VARCHAR(15)
-DETERMINISTIC
-BEGIN
-    DECLARE ip_num BIGINT;
-    DECLARE mask BIGINT;
-    
-    SET ip_num = INET_ATON(ip);
-    SET mask = POWER(2, 32) - POWER(2, 32 - cidr);
-    
-    RETURN INET_NTOA(ip_num & mask);
-END;
-
--- Funzione di supporto per ottenere l'indirizzo di broadcast da un IP e CIDR
-CREATE FUNCTION GET_BROADCAST_ADDRESS(ip VARCHAR(15), cidr INT)
-RETURNS VARCHAR(15)
-DETERMINISTIC
-BEGIN
-    DECLARE ip_num BIGINT;
-    DECLARE mask BIGINT;
-    DECLARE broadcast BIGINT;
-    
-    SET ip_num = INET_ATON(ip);
-    SET mask = POWER(2, 32) - POWER(2, 32 - cidr);
-    SET broadcast = ip_num | (POWER(2, 32 - cidr) - 1);
-    
-    RETURN INET_NTOA(broadcast);
-END;
-```
+[`HELPER_FUNCTIONS_MySQL.sql`](./sql/HELPER_FUNCTIONS_MySQL.sql)
 
 2. Quindi installa la funzione FIND_SUBNETS_AGGREGATE:
-```sql
-CREATE FUNCTION FIND_SUBNETS_AGGREGATE(subnet_list TEXT)
-RETURNS VARCHAR(50)
-DETERMINISTIC
-BEGIN
-    DECLARE i INT DEFAULT 1;
-    DECLARE total_subnets INT;
-    DECLARE current_subnet VARCHAR(50);
-    DECLARE ip VARCHAR(15);
-    DECLARE cidr INT;
-    DECLARE min_ip BIGINT;
-    DECLARE max_ip BIGINT;
-    DECLARE current_ip BIGINT;
-    DECLARE common_bits INT DEFAULT 32;
-    DECLARE aggregate_cidr INT;
-    DECLARE aggregate_ip BIGINT;
-    
-    -- Dividi la lista di subnet per virgola e conta le subnet
-    SET total_subnets = (LENGTH(subnet_list) - LENGTH(REPLACE(subnet_list, ',', ''))) + 1;
-    
-    -- Inizializza IP min e max
-    SET current_subnet = SUBSTRING_INDEX(subnet_list, ',', 1);
-    SET ip = SUBSTRING_INDEX(current_subnet, '/', 1);
-    SET cidr = CAST(SUBSTRING_INDEX(current_subnet, '/', -1) AS UNSIGNED);
-    SET min_ip = INET_ATON(GET_NETWORK_ADDRESS(ip, cidr));
-    SET max_ip = INET_ATON(GET_BROADCAST_ADDRESS(ip, cidr));
-    
-    -- Elabora ogni subnet per trovare IP min e max
-    WHILE i < total_subnets DO
-        SET i = i + 1;
-        SET current_subnet = SUBSTRING_INDEX(SUBSTRING_INDEX(subnet_list, ',', i), ',', -1);
-        SET ip = SUBSTRING_INDEX(current_subnet, '/', 1);
-        SET cidr = CAST(SUBSTRING_INDEX(current_subnet, '/', -1) AS UNSIGNED);
-        SET current_ip = INET_ATON(GET_NETWORK_ADDRESS(ip, cidr));
-        
-        IF current_ip < min_ip THEN
-            SET min_ip = current_ip;
-        END IF;
-        
-        SET current_ip = INET_ATON(GET_BROADCAST_ADDRESS(ip, cidr));
-        
-        IF current_ip > max_ip THEN
-            SET max_ip = current_ip;
-        END IF;
-    END WHILE;
-    
-    -- Trova i bit comuni da sinistra a destra
-    SET common_bits = 0;
-    WHILE common_bits < 32 DO
-        IF ((min_ip >> (31 - common_bits)) & 1) = ((max_ip >> (31 - common_bits)) & 1) THEN
-            SET common_bits = common_bits + 1;
-        ELSE
-            BREAK;
-        END IF;
-    END WHILE;
-    
-    -- Calcola il CIDR dell'aggregato
-    SET aggregate_cidr = common_bits;
-    
-    -- Calcola l'indirizzo di rete dell'aggregato
-    SET aggregate_ip = min_ip & (POWER(2, 32) - POWER(2, 32 - aggregate_cidr));
-    
-    -- Restituisci il risultato
-    RETURN CONCAT(INET_NTOA(aggregate_ip), '/', aggregate_cidr);
-END;
-```
+[`FIND_SUBNETS_AGGREGATE_MySQL.sql`](./sql/FIND_SUBNETS_AGGREGATE_MySQL.sql)
 
 ## Utilizzo
 
