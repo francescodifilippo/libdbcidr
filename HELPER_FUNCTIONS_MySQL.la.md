@@ -13,7 +13,7 @@ Hoc documentum describit functiones auxiliares essentiales requisitas pro operat
 
 Ad has functiones auxiliares in tua base datorum MySQL installandas, exsequere haec mandata SQL:
 
-[`HELPER_FUNCTIONS_Oracle.sql`](./sql/HELPER_FUNCTIONS_MySQL.sql)
+[`HELPER_FUNCTIONS_MySQL.sql`](./sql/HELPER_FUNCTIONS_MySQL.sql)
 
 ## Descriptiones Functionum
 
