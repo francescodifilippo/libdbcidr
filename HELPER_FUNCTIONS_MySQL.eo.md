@@ -13,7 +13,7 @@
 
 Por instali ĉi tiujn helpajn funkciojn en via MySQL-datumbazo, plenumu la sekvajn SQL-komandojn:
 
-[`HELPER_FUNCTIONS_Oracle.sql`](./sql/HELPER_FUNCTIONS_MySQL.sql)
+[`HELPER_FUNCTIONS_MySQL.sql`](./sql/HELPER_FUNCTIONS_MySQL.sql)
 
 ## Funkcio-Priskriboj
 
